@@ -48,4 +48,26 @@ df['is_weekend'] = df.season.astype('category')
 # date time conversion
 df['date_time'] = pd.to_datetime(df['date_time'], format ="%Y-%m-%d %H:%M:%S")
 
-print(df.info())
+# separating month, day, and hour
+df['month'] = df['date_time'].apply(lambda x : str(x).split(' ')[0].split('-')[1])
+df['day'] = df['date_time'].apply(lambda x : str(x).split(' ')[0].split('-')[2])
+df['hour'] = df['date_time'].apply(lambda x : str(x).split(' ')[1].split(':')[0])
+
+
+
+# boxplots of bikeshare use by month, day, and hour
+sns.boxplot(data=df, x='month', y='count')
+plt.show()
+sns.boxplot(data=df, x='day', y='count')
+plt.show()
+sns.boxplot(data=df, x='hour', y='count')
+plt.show()
+
+# barplots of total use on weekend, season, and holiday
+sns.barplot(x=df['is_weekend'],y=df['count'])
+plt.show()
+sns.barplot(x=df['is_holiday'],y=df['count'])
+plt.show()
+sns.barplot(x=df['season'],y=df['count'])
+plt.show()
+

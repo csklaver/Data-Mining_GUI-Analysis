@@ -252,7 +252,7 @@ class MultipleLinearRegression(QMainWindow):
         self.groupBox1Layout.addWidget(self.feature7, 1, 3)
         self.groupBox1Layout.addWidget(self.feature8, 2, 0)
         self.groupBox1Layout.addWidget(self.feature9, 2, 1)
-        self.groupBox1Layout.addWidget(self.feature10, 3, 0)
+        self.groupBox1Layout.addWidget(self.feature10, 2, 2)
         self.groupBox1Layout.addWidget(self.btnExecute, 3, 1)
 
         self.groupBox2 = QGroupBox('Results from the model')
@@ -505,7 +505,7 @@ class CorrelationPlot(QMainWindow):
         self.groupBox1Layout.addWidget(self.feature7,1,3)
         self.groupBox1Layout.addWidget(self.feature8, 2, 0)
         self.groupBox1Layout.addWidget(self.feature9, 2, 1)
-        self.groupBox1Layout.addWidget(self.feature10, 3, 0)
+        self.groupBox1Layout.addWidget(self.feature10, 2, 2)
         self.groupBox1Layout.addWidget(self.btnExecute,3,1)
 
 
@@ -598,4 +598,4 @@ if __name__ == '__main__':
     # First reads the data then calls for the application
     #::------------------------------------
     data_bike()
-    
+    main()

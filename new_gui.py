@@ -25,7 +25,6 @@ from numpy.polynomial.polynomial import polyfit
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
@@ -34,10 +33,6 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve, auc
 from sklearn.preprocessing import label_binarize
 
-# Libraries to display decision tree
-from pydotplus import graph_from_dot_data
-from sklearn.tree import export_graphviz
-import webbrowser
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -147,15 +142,6 @@ class App(QMainWindow):
 
         MLModelMenu.addAction(MLModel2Button)
 
-        #::--------------------------------------------------
-        # Decision Tree Model
-        #::--------------------------------------------------
-        MLModel3Button =  QAction(QIcon(), 'Decision Tree Entropy', self)
-        MLModel3Button.setStatusTip('ML algorithm with Entropy ')
-        MLModel3Button.triggered.connect(self.MLDT)
-
-        MLModelMenu.addAction(MLModel3Button)
-
         #::--------------------------------------
         # Exit application
         # Creates the actions for the fileMenu item
@@ -191,356 +177,6 @@ class App(QMainWindow):
         dialog = MultipleLinearRegression()
         self.dialogs.append(dialog)
         dialog.show()
-
-    def MLDT(self):
-        #::-----------------------------------------------------------
-        # This function creates an instance of the Multiple Linear Regression
-        #::-----------------------------------------------------------
-        dialog = DecisionTree()
-        self.dialogs.append(dialog)
-        dialog.show()
-
-class DecisionTree(QMainWindow):
-    #::----------------------
-    # Implementation of Decision Tree Algorithm using the happiness dataset
-    # the methods in this class are
-    #       _init_ : initialize the class
-    #       initUi : creates the canvas and all the elements in the canvas
-    #       update : populates the elements of the canvas base on the parametes
-    #               chosen by the user
-    #       view_tree : shows the tree in a pdf form
-    #::----------------------
-
-    send_fig = pyqtSignal(str)
-
-    def __init__(self):
-        super(DecisionTree, self).__init__()
-
-        self.Title ="Decision Tree Classifier"
-        self.initUi()
-
-    def initUi(self):
-        #::-----------------------------------------------------------------
-        #  Create the canvas and all the element to create a dashboard with
-        #  all the necessary elements to present the results from the algorithm
-        #  The canvas is divided using a  grid layout to facilitate the drawing
-        #  of the elements
-        #::-----------------------------------------------------------------
-
-        self.setWindowTitle(self.Title)
-        self.setStyleSheet(font_size_window)
-
-        self.main_widget = QWidget(self)
-
-        self.layout = QGridLayout(self.main_widget)
-
-        self.groupBox1 = QGroupBox('ML Decision Tree Features')
-        self.groupBox1Layout= QGridLayout()
-        self.groupBox1.setLayout(self.groupBox1Layout)
-
-        self.feature0 = QCheckBox(features_list[0],self)
-        self.feature1 = QCheckBox(features_list[1],self)
-        self.feature2 = QCheckBox(features_list[2], self)
-        self.feature3 = QCheckBox(features_list[3], self)
-        self.feature4 = QCheckBox(features_list[4],self)
-        self.feature5 = QCheckBox(features_list[5],self)
-        self.feature6 = QCheckBox(features_list[6], self)
-        self.feature7 = QCheckBox(features_list[7], self)
-        self.feature8 = QCheckBox(features_list[8], self)
-        self.feature9 = QCheckBox(features_list[9], self)
-        self.feature10 = QCheckBox(features_list[10], self)
-        self.feature0.setChecked(True)
-        self.feature1.setChecked(True)
-        self.feature2.setChecked(True)
-        self.feature3.setChecked(True)
-        self.feature4.setChecked(True)
-        self.feature5.setChecked(True)
-        self.feature6.setChecked(True)
-        self.feature7.setChecked(True)
-        self.feature8.setChecked(True)
-        self.feature9.setChecked(True)
-        self.feature10.setChecked(True)
-
-        self.lblPercentTest = QLabel('Percentage for Test :')
-        self.lblPercentTest.adjustSize()
-
-        self.txtPercentTest = QLineEdit(self)
-        self.txtPercentTest.setText("30")
-
-        self.lblMaxDepth = QLabel('Maximun Depth :')
-        self.txtMaxDepth = QLineEdit(self)
-        self.txtMaxDepth.setText("3")
-
-        self.btnExecute = QPushButton("Execute DT")
-        self.btnExecute.clicked.connect(self.update)
-
-        self.btnDTFigure = QPushButton("View Tree")
-        self.btnDTFigure.clicked.connect(self.view_tree)
-
-        # We create a checkbox for each feature
-
-        self.groupBox1Layout.addWidget(self.feature0,0,0)
-        self.groupBox1Layout.addWidget(self.feature1,0,1)
-        self.groupBox1Layout.addWidget(self.feature2,1,0)
-        self.groupBox1Layout.addWidget(self.feature3,1,1)
-        self.groupBox1Layout.addWidget(self.feature4,2,0)
-        self.groupBox1Layout.addWidget(self.feature5,2,1)
-        self.groupBox1Layout.addWidget(self.feature6,3,0)
-        self.groupBox1Layout.addWidget(self.feature7,3,1)
-        self.groupBox1Layout.addWidget(self.feature8,4,0)
-        self.groupBox1Layout.addWidget(self.feature9,4,1)
-        self.groupBox1Layout.addWidget(self.feature10, 4, 2)
-        self.groupBox1Layout.addWidget(self.lblPercentTest,5,0)
-        self.groupBox1Layout.addWidget(self.txtPercentTest,5,1)
-        self.groupBox1Layout.addWidget(self.lblMaxDepth,6,0)
-        self.groupBox1Layout.addWidget(self.txtMaxDepth,6,1)
-        self.groupBox1Layout.addWidget(self.btnExecute,7,0)
-        self.groupBox1Layout.addWidget(self.btnDTFigure,7,1)
-
-        self.groupBox2 = QGroupBox('Results from the model')
-        self.groupBox2Layout = QVBoxLayout()
-        self.groupBox2.setLayout(self.groupBox2Layout)
-
-        self.lblResults = QLabel('Results:')
-        self.lblResults.adjustSize()
-        self.txtResults = QPlainTextEdit()
-        self.lblAccuracy = QLabel('Accuracy:')
-        self.txtAccuracy = QLineEdit()
-
-        self.groupBox2Layout.addWidget(self.lblResults)
-        self.groupBox2Layout.addWidget(self.txtResults)
-        self.groupBox2Layout.addWidget(self.lblAccuracy)
-        self.groupBox2Layout.addWidget(self.txtAccuracy)
-
-        #::-------------------------------------
-        # Graphic 1 : Confusion Matrix
-        #::-------------------------------------
-
-        self.fig = Figure()
-        self.ax1 = self.fig.add_subplot(111)
-        self.axes=[self.ax1]
-        self.canvas = FigureCanvas(self.fig)
-
-        self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-        self.canvas.updateGeometry()
-
-        self.groupBoxG1 = QGroupBox('Confusion Matrix')
-        self.groupBoxG1Layout= QVBoxLayout()
-        self.groupBoxG1.setLayout(self.groupBoxG1Layout)
-
-        self.groupBoxG1Layout.addWidget(self.canvas)
-
-        #::--------------------------------------------
-        ## End Graph1
-        #::--------------------------------------------
-
-        #::---------------------------------------------
-        # Graphic 2 : ROC Curve
-        #::---------------------------------------------
-
-        self.fig2 = Figure()
-        self.ax2 = self.fig2.add_subplot(111)
-        self.axes2 = [self.ax2]
-        self.canvas2 = FigureCanvas(self.fig2)
-
-        self.canvas2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-        self.canvas2.updateGeometry()
-
-        self.groupBoxG2 = QGroupBox('ROC Curve')
-        self.groupBoxG2Layout = QVBoxLayout()
-        self.groupBoxG2.setLayout(self.groupBoxG2Layout)
-
-        self.groupBoxG2Layout.addWidget(self.canvas2)
-
-        #::---------------------------------------------------
-        # Graphic 3 : ROC Curve by Class
-        #::---------------------------------------------------
-
-
-        ## End of elements on the dashboard
-
-        self.layout.addWidget(self.groupBox1,0,0)
-        self.layout.addWidget(self.groupBoxG1,0,1)
-        self.layout.addWidget(self.groupBox2,0,2)
-        self.layout.addWidget(self.groupBoxG2,1,1)
-
-        self.setCentralWidget(self.main_widget)
-        self.resize(1100, 700)
-        self.show()
-
-
-    def update(self):
-        '''
-        Decision Tree Algorithm
-        We pupulate the dashboard using the parametres chosen by the user
-        The parameters are processed to execute in the skit-learn Decision Tree algorithm
-          then the results are presented in graphics and reports in the canvas
-        :return: None
-        '''
-
-        # We process the parameters
-        self.list_corr_features = pd.DataFrame([])
-        if self.feature0.isChecked():
-            if len(self.list_corr_features)==0:
-                self.list_corr_features = london_bikes[features_list[0]]
-            else:
-                self.list_corr_features = pd.concat([self.list_corr_features, london_bikes[features_list[0]]],axis=1)
-
-        if self.feature1.isChecked():
-            if len(self.list_corr_features) == 0:
-                self.list_corr_features = london_bikes[features_list[1]]
-            else:
-                self.list_corr_features = pd.concat([self.list_corr_features, london_bikes[features_list[1]]],axis=1)
-
-        if self.feature2.isChecked():
-            if len(self.list_corr_features) == 0:
-                self.list_corr_features = london_bikes[features_list[2]]
-            else:
-                self.list_corr_features = pd.concat([self.list_corr_features, london_bikes[features_list[2]]],axis=1)
-
-        if self.feature3.isChecked():
-            if len(self.list_corr_features) == 0:
-                self.list_corr_features = london_bikes[features_list[3]]
-            else:
-                self.list_corr_features = pd.concat([self.list_corr_features, london_bikes[features_list[3]]],axis=1)
-
-        if self.feature4.isChecked():
-            if len(self.list_corr_features) == 0:
-                self.list_corr_features = london_bikes[features_list[4]]
-            else:
-                self.list_corr_features = pd.concat([self.list_corr_features, london_bikes[features_list[4]]],axis=1)
-
-        if self.feature5.isChecked():
-            if len(self.list_corr_features) == 0:
-                self.list_corr_features = london_bikes[features_list[5]]
-            else:
-                self.list_corr_features = pd.concat([self.list_corr_features, london_bikes[features_list[5]]],axis=1)
-
-        if self.feature6.isChecked():
-            if len(self.list_corr_features) == 0:
-                self.list_corr_features = london_bikes[features_list[6]]
-            else:
-                self.list_corr_features = pd.concat([self.list_corr_features, london_bikes[features_list[6]]],axis=1)
-
-        if self.feature7.isChecked():
-            if len(self.list_corr_features) == 0:
-                self.list_corr_features = london_bikes[features_list[7]]
-            else:
-                self.list_corr_features = pd.concat([self.list_corr_features, london_bikes[features_list[7]]],axis=1)
-
-        if self.feature8.isChecked():
-            if len(self.list_corr_features) == 0:
-                self.list_corr_features = london_bikes[features_list[8]]
-            else:
-                self.list_corr_features = pd.concat([self.list_corr_features, london_bikes[features_list[8]]],axis=1)
-
-        if self.feature9.isChecked():
-            if len(self.list_corr_features) == 0:
-                self.list_corr_features = london_bikes[features_list[9]]
-            else:
-                self.list_corr_features = pd.concat([self.list_corr_features, london_bikes[features_list[9]]],axis=1)
-
-        if self.feature10.isChecked():
-            if len(self.list_corr_features) == 0:
-                self.list_corr_features = london_bikes[features_list[10]]
-            else:
-                self.list_corr_features = pd.concat([self.list_corr_features, london_bikes[features_list[10]]],axis=1)
-
-
-
-        vtest_per = float(self.txtPercentTest.text())
-        vmax_depth = float(self.txtMaxDepth.text())
-
-        self.ax1.clear()
-        self.ax2.clear()
-        self.txtResults.clear()
-        self.txtResults.setUndoRedoEnabled(False)
-
-        vtest_per = vtest_per / 100
-
-
-        # We assign the values to X and y to run the algorithm
-
-        X_dt =  self.list_corr_features
-        y_dt = london_bikes["count"]
-
-        class_le = LabelEncoder()
-
-        # fit and transform the class
-
-        y_dt = class_le.fit_transform(y_dt)
-
-        # split the dataset into train and test
-        X_train, X_test, y_train, y_test = train_test_split(X_dt, y_dt, test_size=vtest_per, random_state=100)
-        # perform training with entropy.
-        # Decision tree with entropy
-        self.clf_entropy = DecisionTreeClassifier(criterion="entropy", random_state=100, max_depth=vmax_depth, min_samples_leaf=5)
-
-        # Performing training
-        self.clf_entropy.fit(X_train, y_train)
-
-        # predicton on test using entropy
-        y_pred_entropy = self.clf_entropy.predict(X_test)
-
-        # confusion matrix for entropy model
-
-        conf_matrix = confusion_matrix(y_test, y_pred_entropy)
-
-        # clasification report
-
-        self.ff_class_rep = classification_report(y_test, y_pred_entropy)
-        self.txtResults.appendPlainText(self.ff_class_rep)
-
-        # accuracy score
-
-        self.ff_accuracy_score = accuracy_score(y_test, y_pred_entropy) * 100
-        self.txtAccuracy.setText(str(self.ff_accuracy_score))
-
-
-        #::----------------------------------------------------------------
-        # Graph1 -- Confusion Matrix
-        #::-----------------------------------------------------------------
-
-        self.ax1.set_xlabel('Predicted label')
-        self.ax1.set_ylabel('True label')
-
-        self.ax1.matshow(conf_matrix, cmap= plt.cm.get_cmap('Blues', 14))
-
-
-        self.fig.tight_layout()
-        self.fig.canvas.draw_idle()
-
-        #::-----------------------------------------------------
-        # End Graph 1 -- Confusioin Matrix
-        #::-----------------------------------------------------
-
-        #::-----------------------------------------------------
-        # Graph 2 -- ROC Cure
-        #::-----------------------------------------------------
-
-        y_test_bin = label_binarize(y_test, classes=[0, 1, 2, 3])
-        n_classes = y_test_bin.shape[1]
-
-
-        self.fig2.tight_layout()
-        self.fig2.canvas.draw_idle()
-
-    def view_tree(self):
-        '''
-        Executes the graphviz to create a tree view of the information
-         then it presents the graphic in a pdf formt using webbrowser
-        :return:None
-        '''
-        dot_data = export_graphviz(self.clf_entropy, filled=True, rounded=True,
-                                   feature_names=self.list_corr_features.columns, out_file=None)
-
-
-        graph = graph_from_dot_data(dot_data)
-        graph.write_pdf("decision_tree_entropy.gui.pdf")
-        webbrowser.open_new(r'decision_tree_entropy.gui.pdf')
-
 
 class MultipleLinearRegression(QMainWindow):
     #::----------------------
@@ -623,17 +259,23 @@ class MultipleLinearRegression(QMainWindow):
         self.groupBox2Layout = QVBoxLayout()
         self.groupBox2.setLayout(self.groupBox2Layout)
 
-        self.lblResults = QLabel('Results:')
-        self.lblResults.adjustSize()
-        self.txtResults = QPlainTextEdit()
         self.lblR2 = QLabel('R2:')
         self.txtR2 = QLineEdit()
+        self.lblCoef = QLabel('Coefficients:')
+        self.txtCoef = QLineEdit()
+        self.lblVar = QLabel('Variance:')
+        self.txtVar = QLineEdit()
+        self.lblMSE = QLabel('Mean Squared Error:')
+        self.txtMSE = QLineEdit()
 
-
-        self.groupBox2Layout.addWidget(self.lblResults)
-        self.groupBox2Layout.addWidget(self.txtResults)
         self.groupBox2Layout.addWidget(self.lblR2)
         self.groupBox2Layout.addWidget(self.txtR2)
+        self.groupBox2Layout.addWidget(self.lblCoef)
+        self.groupBox2Layout.addWidget(self.txtCoef)
+        self.groupBox2Layout.addWidget(self.lblVar)
+        self.groupBox2Layout.addWidget(self.txtVar)
+        self.groupBox2Layout.addWidget(self.lblMSE)
+        self.groupBox2Layout.addWidget(self.txtMSE)
 
         self.layout.addWidget(self.groupBox1, 0, 0)
         self.layout.addWidget(self.groupBox2, 1, 0)
@@ -648,8 +290,6 @@ class MultipleLinearRegression(QMainWindow):
     # chosen as parameters for the multiple linear regression
     #::------------------------------------------------------------
 
-        self.txtResults.clear()
-        self.txtResults.setUndoRedoEnabled(False)
 
         self.Y = london_bikes['count']
         self.X = pd.DataFrame()
@@ -701,6 +341,9 @@ class MultipleLinearRegression(QMainWindow):
         #self.txtResults.appendPlainText(self.coef)
 
         self.txtR2.setText(str(self.R2))
+        self.txtVar.setText(str(self.variance))
+        self.txtCoef.setText(str(self.coef))
+        self.txtMSE.setText(str(self.MSE))
 
 
 class LinearRegression(QMainWindow):
@@ -955,4 +598,4 @@ if __name__ == '__main__':
     # First reads the data then calls for the application
     #::------------------------------------
     data_bike()
-    main()
+    

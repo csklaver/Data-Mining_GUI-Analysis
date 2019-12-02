@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 #::--------------------------------
 # Read in the dataset
 #::--------------------------------
-file = 'london_merged.tsv'
+file = 'london_merged.csv'
 df = pd.read_csv(file, sep='\t')
 print(df.info())
 print ('-'*80 + '\n')

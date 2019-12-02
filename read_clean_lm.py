@@ -98,3 +98,46 @@ print('Variance score: {}'.format(reg.score(X_test, y_test)))
 # Printing R2 and Mean Squared Error
 print('R2 score: %.2f' % r2_score(y_test,y_pred)) # Priniting R2 Score
 print('Mean squared Error :',mean_squared_error(y_test,y_pred))
+
+
+## PLOTS
+
+# boxplots of bikeshare use by month, day, and hour
+sns.boxplot(data=df, x='month', y='count')
+plt.show()
+sns.boxplot(data=df, x='day', y='count')
+plt.show()
+sns.boxplot(data=df, x='hour', y='count')
+plt.show()
+
+# barplots of total use on weekend, season, and holiday
+sns.barplot(x=df['is_weekend'],y=df['count'])
+plt.show()
+sns.barplot(x=df['is_holiday'],y=df['count'])
+plt.show()
+sns.barplot(x=df['season'],y=df['count'])
+plt.show()
+
+# plot residual error
+## setting plot style
+plt.style.use('fivethirtyeight')
+
+## plotting residual errors in training data
+plt.scatter(reg.predict(X_train), reg.predict(X_train) - y_train,
+            color="green", s=10, label='Train data')
+
+## plotting residual errors in test data
+plt.scatter(reg.predict(X_test), reg.predict(X_test) - y_test,
+            color="blue", s=10, label='Test data')
+
+## plotting line for zero residual error
+plt.hlines(y=0, xmin=0, xmax=50, linewidth=2)
+
+## plotting legend
+plt.legend(loc='upper right')
+
+## plot title
+plt.title("Residual errors")
+
+## function to show plot
+plt.show()

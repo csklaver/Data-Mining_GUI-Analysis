@@ -255,30 +255,64 @@ class MultipleLinearRegression(QMainWindow):
         self.groupBox1Layout.addWidget(self.feature10, 2, 2)
         self.groupBox1Layout.addWidget(self.btnExecute, 3, 1)
 
+        self.groupBox3 = QGroupBox('')
+        self.groupBox3Layout = QGridLayout()
+        self.groupBox3.setLayout(self.groupBox3Layout)
+
+        self.groupBox4 = QGroupBox('Parameters of the Model')
+        self.groupBox4Layout = QGridLayout()
+        self.groupBox4.setLayout(self.groupBox4Layout)
+
         self.groupBox2 = QGroupBox('Results from the model')
         self.groupBox2Layout = QVBoxLayout()
         self.groupBox2.setLayout(self.groupBox2Layout)
 
         self.lblR2 = QLabel('R2:')
         self.txtR2 = QLineEdit()
-        self.lblCoef = QLabel('Coefficients:')
-        self.txtCoef = QLineEdit()
         self.lblVar = QLabel('Variance:')
         self.txtVar = QLineEdit()
         self.lblMSE = QLabel('Mean Squared Error:')
         self.txtMSE = QLineEdit()
 
+        self.lblParam = QLabel("Coefficients:")
+        self.lblParam.adjustSize()
+        self.txtParam = QPlainTextEdit()
+
         self.groupBox2Layout.addWidget(self.lblR2)
         self.groupBox2Layout.addWidget(self.txtR2)
-        self.groupBox2Layout.addWidget(self.lblCoef)
-        self.groupBox2Layout.addWidget(self.txtCoef)
         self.groupBox2Layout.addWidget(self.lblVar)
         self.groupBox2Layout.addWidget(self.txtVar)
         self.groupBox2Layout.addWidget(self.lblMSE)
         self.groupBox2Layout.addWidget(self.txtMSE)
 
+        self.groupBox4Layout.addWidget(self.lblParam)
+        self.groupBox4Layout.addWidget(self.txtParam)
+
         self.layout.addWidget(self.groupBox1, 0, 0)
         self.layout.addWidget(self.groupBox2, 1, 0)
+        self.layout.addWidget(self.groupBox3, 0, 1)
+        self.layout.addWidget(self.groupBox4, 1, 1)
+
+        #::--------------------------------------
+        # Graphic 1 : Residuals
+        #::--------------------------------------
+
+        self.fig = Figure()
+        self.ax1 = self.fig.add_subplot(111)
+        self.axes = [self.ax1]
+        self.canvas = FigureCanvas(self.fig)
+
+        self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        self.canvas.updateGeometry()
+
+        self.groupBoxG3 = QGroupBox('Residuals Plot')
+        self.groupBoxG3Layout = QVBoxLayout()
+        self.groupBoxG3.setLayout(self.groupBoxG3Layout)
+
+        self.groupBoxG3Layout.addWidget(self.canvas)
+
+        self.layout.addWidget(self.groupBoxG3,0,1)
 
         self.setCentralWidget(self.main_widget)
         self.resize(1100, 700)
@@ -289,7 +323,8 @@ class MultipleLinearRegression(QMainWindow):
     # Populates the elements in the canvas using the values
     # chosen as parameters for the multiple linear regression
     #::------------------------------------------------------------
-
+        self.ax1.clear()
+        self.txtParam.clear()
 
         self.Y = london_bikes['count']
         self.X = pd.DataFrame()
@@ -314,7 +349,7 @@ class MultipleLinearRegression(QMainWindow):
         if self.feature9.isChecked():
             self.X[features_list[9]] = london_bikes[features_list[9]]
         if self.feature10.isChecked():
-            self.X[features_list[9]] = london_bikes[features_list[10]]
+            self.X[features_list[10]] = london_bikes[features_list[10]]
 
         # splitting X and y into training and testing sets
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.Y,
@@ -338,12 +373,31 @@ class MultipleLinearRegression(QMainWindow):
         self.R2 = r2_score(self.y_test, self.y_pred)  # Priniting R2 Score
         self.MSE = mean_squared_error(self.y_test, self.y_pred)
 
-        #self.txtResults.appendPlainText(self.coef)
 
         self.txtR2.setText(str(self.R2))
         self.txtVar.setText(str(self.variance))
-        self.txtCoef.setText(str(self.coef))
         self.txtMSE.setText(str(self.MSE))
+        self.txtParam.appendPlainText(str(self.coef))
+
+
+
+        ### Plot residuals
+        self.ax1.scatter(self.reg.predict(self.X_train), self.reg.predict(self.X_train) - self.y_train,
+            color="green", s=10, label='Train data')
+        ## plotting residual errors in test data
+        self.ax1.scatter(self.reg.predict(self.X_test), self.reg.predict(self.X_test) - self.y_test,
+                color="blue", s=10, label='Test data')
+        ## plotting line for zero residual error
+        self.ax1.hlines(y=0, xmin=0, xmax=50, linewidth=2)
+        ## plotting line for zero residual error
+        self.ax1.hlines(y=0, xmin=0, xmax=50, linewidth=2)
+        ## plotting legend
+        self.ax1.legend(loc='upper right')
+
+
+        self.fig.tight_layout()
+        self.fig.canvas.draw_idle()
+
 
 
 class LinearRegression(QMainWindow):
@@ -489,8 +543,8 @@ class CorrelationPlot(QMainWindow):
         self.feature6.setChecked(True)
         self.feature7.setChecked(True)
         self.feature8.setChecked(True)
-        self.feature9.setChecked(False)
-        self.feature10.setChecked(False)
+        self.feature9.setChecked(True)
+        self.feature10.setChecked(True)
 
         self.btnExecute = QPushButton("Create Plot")
         self.btnExecute.clicked.connect(self.update)
@@ -583,8 +637,6 @@ class CorrelationPlot(QMainWindow):
         vsticks1 = vsticks + vsticks1
         res_corr = list_corr_features.corr()
         self.ax1.matshow(res_corr, cmap=plt.cm.Reds)
-        #self.ax1.set_xticks(np.arange(len(list_corr_features)))
-        #self.ax1.set_yticks(np.arange(len(list_corr_features)))
         self.ax1.set_yticklabels(vsticks1)
         self.ax1.set_xticklabels(vsticks1,rotation = 90)
 

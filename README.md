@@ -6,10 +6,10 @@ The purpose of this project is to perform EDA and machine learning algorithms to
 
 The structure of the dataset is as follows:
 
-**Independant Variable --
+**Independant Variable --**
 Bike Share Count
 
-**Dependant Variables(Features) --
+**Dependant Variables(Features) --**
 * Temperature
 * Temperature "feels"
 * Humidity

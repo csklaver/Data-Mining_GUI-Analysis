@@ -6,10 +6,10 @@ The purpose of this project is to perform EDA and machine learning algorithms to
 
 The structure of the dataset is as follows:
 
-**Independant Variable -- X**
-*Bike Share Count
+**Independant Variable --
+Bike Share Count
 
-**Dependant Variables(Features) -- y**
+**Dependant Variables(Features) --
 * Temperature
 * Temperature "feels"
 * Humidity
@@ -27,19 +27,19 @@ The structure of the dataset is as follows:
 
 **read_clean_lm.py** is the python file that reads, cleans, and exports the new dataset. Sample multiple linear regression is run. Plots and visuals are made. 
 
-**Main_GUI.py** is the python file that contains all the code for the GUI demo
+**Main_GUI.py** is the python file that contains all the code for the GUI demo.
 
 **London_raw.csv** is the initial datasets, it is raw data that is used in the read_clean_lm.py code file.
 
-**London_exported.csv** is the processed dataset that is used the EDA and in the ML algorithms of the GUI
+**London_exported.csv** is the processed dataset that is used the EDA and in the ML algorithms of the GUI.
 
-all the files need to be located in the same directory
+All the files need to be located in the same directory.
 
 # Description of the application 
 
 The purpose of the application is to present a basic EDA analysis of the processed dataset and two dashboards with the results of the algoritms. The algorithms used are Linear Regression and Multiple Linear Regression. The Linear Regression algorithm is used mostly for visualization, while the Multiple Linear Regression builds a complete model. 
 
-The structure of the application is as follows 
+The structure of the application is as follows:
   
 1. EDA Analysis
     >* **Correlation Plot :** This option presents a correlation plot for all the features in the dataset. The features can be add o deleted from the plot. Each time that a modification is made the button **Create Plot** should be pressed.

@@ -29,7 +29,7 @@ Bike Share Count
 
 **Main_GUI.py** is the python file that contains all the code for the GUI demo.
 
-**London_raw.csv** is the initial datasets, it is raw data that is used in the read_clean_lm.py code file.
+**london_merged.tsv** is the initial datasets, it is raw data that is used in the read_clean_lm.py code file. This file is tab-separated.
 
 **London_exported.csv** is the processed dataset that is used the EDA and in the ML algorithms of the GUI.
 

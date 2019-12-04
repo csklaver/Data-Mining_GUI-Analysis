@@ -47,7 +47,7 @@ The structure of the application is as follows:
     >* **Correlation Plot :** This option presents a correlation plot for all the features in the dataset. The features can be add o deleted from the plot. Each time that a modification is made the button **Create Plot** should be pressed.
     
 3. ML Models
-    >* **Linear Regression :** 
+    >* **Simple Linear Regression :** 
     >>* This option presents the plot of user-chosen continous feature variable with dependent variable(count). 
     >>* The features to be included in the plot can be manipulated by using the dropdown on the screen. 
     >>* The application also presents a check-box option to show the regression line. 

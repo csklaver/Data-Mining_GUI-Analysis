@@ -403,9 +403,9 @@ class MultipleLinearRegression(QMainWindow):
         self.ax1.scatter(self.reg.predict(self.X_test), self.reg.predict(self.X_test) - self.y_test,
                 color="blue", s=10, label='Test data')
         ## plotting line for zero residual error
-        self.ax1.hlines(y=0, xmin=0, xmax=50, linewidth=2)
+        self.ax1.hlines(y=0, xmin=0, xmax=10, linewidth=2)
         ## plotting line for zero residual error
-        self.ax1.hlines(y=0, xmin=0, xmax=50, linewidth=2)
+        self.ax1.hlines(y=0, xmin=0, xmax=10, linewidth=2)
         ## plotting legend
         self.ax1.legend(loc='upper right')
 

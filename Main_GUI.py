@@ -492,7 +492,7 @@ class SimpleLinearRegression(QMainWindow):
             b, m = polyfit(X_1, y_1, 1)
             self.ax1.plot(X_1, b + m * X_1, '-', color="orange")
 
-        vtitle = "Bike Share Count vs. " + cat1 + " 2015"
+        vtitle = "Bike Share Count vs. " + cat1
         self.ax1.set_title(vtitle)
         self.ax1.set_xlabel("Bike Count")
         self.ax1.set_ylabel(cat1)

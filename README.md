@@ -25,6 +25,8 @@ Bike Share Count
 
 # Description of files 
 
+Each of these files can be found in the Code folder:
+
 **read_clean_lm.py** is the python file that reads, cleans, and exports the new dataset. Sample multiple linear regression is run. Plots and visuals are made. 
 
 **Main_GUI.py** is the python file that contains all the code for the GUI demo.
